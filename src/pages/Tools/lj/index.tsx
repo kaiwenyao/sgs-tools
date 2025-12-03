@@ -25,8 +25,7 @@ const Lijue = () => {
 
     // 2. 生成一个 0 - 100 之间的随机数
     // Math.random() 生成 0-1 的小数，乘以 100 变成百分比位置
-    // 别报错了！！！
-    // eslint-disable-next-line
+
     const randomVal = Math.random() * 100;
 
     // 3. 判断落在哪个区间

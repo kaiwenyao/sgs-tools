@@ -1,13 +1,29 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-import Layout from "@/pages/Layout";
-import ToolsIndex from "@/pages/Tools";
-import About from "@/pages/About";
-import Sxy from "@/pages/Tools/sxy";
-import Lijue from "@/pages/Tools/lj";
+import { lazy, Suspense } from "react";
+
+// Lazy load components
+const Layout = lazy(() => import("@/pages/Layout"));
+const ToolsIndex = lazy(() => import("@/pages/Tools/Dashboard"));
+const About = lazy(() => import("@/pages/About"));
+const Sxy = lazy(() => import("@/pages/Tools/sxy"));
+const Lijue = lazy(() => import("@/pages/Tools/lj"));
+
+// Loading fallback component
+const Loading = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    Loading...
+  </div>
+);
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Layout />
+      </Suspense>
+    ),
     children: [
       {
         // 默认访问 / 时，重定向到 /tools

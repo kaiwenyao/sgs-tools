@@ -12,7 +12,7 @@ dist
 dist.tar.gz
 dist-ssr
 *.local
-deploy.sh
+
 
 # Editor directories and files
 .vscode/*

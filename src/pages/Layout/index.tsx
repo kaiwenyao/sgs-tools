@@ -20,7 +20,7 @@ const Layout = () => {
           showLabels
           value={pathname} // 高亮当前路径对应的按钮
           onChange={(_, newValue) => {
-            navigate(newValue); // 切换路由
+            void navigate(newValue as string); // 切换路由
           }}
         >
           <BottomNavigationAction

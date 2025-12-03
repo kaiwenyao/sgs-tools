@@ -42,7 +42,7 @@ const ToolsIndex = () => {
               onClick={() => {
                 console.log(`点击了 ${tool.name}，准备跳转到 ${tool.route}`);
                 // 这里后面可以接 navigate(tool.route)
-                navigate(tool.route);
+                void navigate(tool.route);
               }}
             >
               <Stack alignItems="center" spacing={0}>

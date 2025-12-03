@@ -97,7 +97,7 @@ const Lijue = () => {
       <Stack spacing={3}>
         {/* 输入框 A */}
         <TextField
-          label="0伤害(%)"
+          label="0伤害-羊袭(%)"
           type="number" // 限制数字输入键盘
           value={values.partA}
           onChange={(e) => handleChange("partA", e.target.value)}
@@ -106,7 +106,7 @@ const Lijue = () => {
 
         {/* 输入框 B */}
         <TextField
-          label="1伤害(%)"
+          label="1伤害-狗袭(%)"
           type="number"
           value={values.partB}
           onChange={(e) => handleChange("partB", e.target.value)}
@@ -115,7 +115,7 @@ const Lijue = () => {
 
         {/* 输入框 C */}
         <TextField
-          label="2伤害(%)"
+          label="2伤害-狼袭(%)"
           type="number"
           value={values.partC}
           onChange={(e) => handleChange("partC", e.target.value)}

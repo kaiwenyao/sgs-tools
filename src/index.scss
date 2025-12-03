@@ -1,0 +1,17 @@
+// 1. 定义字体
+@font-face {
+  // 给你的字体起一个好记的英文名字
+  // 金梅方隸書
+  font-family: "jinmeifanglishu";
+
+  src: url("./assets/fonts/jinmeifanglishu.ttf") format("truetype");
+
+  // 字体渲染优化设置
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; // 优化加载体验，防止文字隐形
+}
+
+.font-jinmeifanglishu {
+  font-family: "jinmeifanglishu", cursive, sans-serif;
+}

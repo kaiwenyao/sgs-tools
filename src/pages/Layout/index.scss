@@ -1,0 +1,23 @@
+/* index.scss */
+
+.layout-content {
+  /* 【核心 1】给底部留出空间 */
+  /* 必须设置，高度等于导航栏高度 (Material UI 默认 56px) */
+  /* 这样滑到底部时，最后的内容才不会被导航栏挡住 */
+  padding-bottom: 56px;
+}
+
+.layout-tabbar {
+  /* 【核心 2】固定在屏幕最底部 */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  /* 【核心 3】确保导航栏浮在内容上面 */
+  z-index: 1000;
+  
+  /* 【核心 4】必须保留白色背景 */
+  /* 否则当页面滚动时，文字会透过透明的导航栏显示出来，造成重叠 */
+  background-color: #fff; 
+}

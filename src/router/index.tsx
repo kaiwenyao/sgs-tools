@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import { Box, Chip, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 
 // Lazy load components
 const Layout = lazy(() => import("@/pages/Layout"));
@@ -11,9 +12,35 @@ const Lijue = lazy(() => import("@/pages/Tools/lj"));
 
 // Loading fallback component
 const Loading = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-    Loading...
-  </div>
+  <Box
+    sx={{
+      minHeight: "100vh",
+      display: "grid",
+      placeItems: "center",
+      textAlign: "center",
+      px: 2,
+    }}
+  >
+        <Paper
+      sx={{
+        borderRadius: 2,
+        px: 2,
+        py: 1.8,
+        minWidth: 210,
+      }}
+    >
+      <Stack spacing={1.1} alignItems="center">
+        <CircularProgress size={32} />
+        <Typography fontWeight={700} color="text.primary">
+          页面加载中
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          正在准备工具界面...
+        </Typography>
+        <Chip size="small" label="请稍候" color="primary" variant="outlined" />
+      </Stack>
+    </Paper>
+  </Box>
 );
 
 const router = createBrowserRouter([

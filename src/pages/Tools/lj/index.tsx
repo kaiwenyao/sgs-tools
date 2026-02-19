@@ -1,164 +1,259 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import {
-  Button,
-  TextField,
-  Stack,
   Alert,
-  Typography,
   Box,
+  Button,
+  Chip,
   Fade,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 
 const getRandomPercent = () => Math.random() * 100;
+const resultLabels = ["羊袭", "狗袭", "狼袭"] as const;
+
+type ResultKey = "partA" | "partB" | "partC";
+type WeightState = Record<ResultKey, string>;
+
+const presets: Array<{ label: string; values: WeightState }> = [
+  { label: "均衡", values: { partA: "34", partB: "33", partC: "33" } },
+  { label: "稳健", values: { partA: "50", partB: "30", partC: "20" } },
+  { label: "激进", values: { partA: "20", partB: "20", partC: "60" } },
+];
+
+const parseWeight = (value: string) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+
+  return Math.min(parsed, 100);
+};
 
 const Lijue = () => {
-  // 1. 定义状态：这里用一个对象存储三个输入框的值
-  // 初始值设为字符串 ""，方便处理空输入的情况
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<WeightState>({
     partA: "",
     partB: "",
     partC: "",
   });
   const [result, setResult] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  const numA = parseWeight(values.partA);
+  const numB = parseWeight(values.partB);
+  const numC = parseWeight(values.partC);
+
+  const currentSum = numA + numB + numC;
+  const isAllFilled = values.partA !== "" && values.partB !== "" && values.partC !== "";
+  const isValid = isAllFilled && currentSum === 100;
+  const diff = 100 - currentSum;
+
+  const resultMeta = useMemo(
+    () => [
+      { label: "羊袭", value: numA, color: "#0F766E" },
+      { label: "狗袭", value: numB, color: "#B45309" },
+      { label: "狼袭", value: numC, color: "#64748B" },
+    ],
+    [numA, numB, numC]
+  );
+
   const handleGenerate = () => {
-    // 1. 获取当前的权重值 (转为数字)
-    const weightA = Number(values.partA);
-    const weightB = Number(values.partB);
-    // weightC 其实不需要参与计算，只要前两个没中，剩下的就是 C
-
-    // 2. 生成一个 0 - 100 之间的随机数
-    // Math.random() 生成 0-1 的小数，乘以 100 变成百分比位置
-
     const randomVal = getRandomPercent();
 
-    // 3. 判断落在哪个区间
     let finalResult;
-
-    if (randomVal < weightA) {
-      // 落在 0 到 A 之间 -> 选中 A (对应数字 0)
+    if (randomVal < numA) {
       finalResult = 0;
-    } else if (randomVal < weightA + weightB) {
-      // 落在 A 到 A+B 之间 -> 选中 B (对应数字 1)
+    } else if (randomVal < numA + numB) {
       finalResult = 1;
     } else {
-      // 剩下的情况 -> 选中 C (对应数字 2)
       finalResult = 2;
     }
 
-    // 4. 更新状态显示结果
-    // 为了让你看清楚，我把生成的随机数也打印出来
-    // console.log(`随机数: ${randomVal.toFixed(2)}, 结果: ${finalResult}`);
-    setResult(
-      // `随机选中了: ${finalResult} (对应输入框 ${["A", "B", "C"][finalResult]})`
-      `${["🐑羊袭！", "🐕狗袭！", "🐺狼袭！"][finalResult]}`
-    );
+    setResult(resultLabels[finalResult]);
     setVisible(true);
   };
-  // 2. 处理输入改变
-  const handleChange = (key: string, newValue: string) => {
-    // 简单的正则验证：只允许输入数字 (可选：允许小数)
-    // 如果你不介意 e 符号等，可以直接用 type="number" 配合
-    setValues((prev) => ({
-      ...prev,
-      [key]: newValue,
-    }));
+
+  const handleChange = (key: ResultKey, event: ChangeEvent<HTMLInputElement>) => {
+    const next = event.target.value;
+
+    if (next === "") {
+      setValues((prev) => ({ ...prev, [key]: "" }));
+      return;
+    }
+
+    if (!/^(\d{1,3})(\.\d{0,2})?$/.test(next)) {
+      return;
+    }
+
+    setValues((prev) => ({ ...prev, [key]: next }));
   };
 
-  // 3. 【核心逻辑】实时计算总和 (Derived State)
-  // Number(val) 会把空字符串转为 0，这正好符合我们的计算需求
-  const numA = Number(values.partA);
-  const numB = Number(values.partB);
-  const numC = Number(values.partC);
-
-  const currentSum = numA + numB + numC;
-  const isValid = currentSum === 100;
-
-  // 计算差值
-  const diff = 100 - currentSum;
-
-  // 1. 控制显示/隐藏的状态
-  const [visible, setVisible] = useState(false);
-
   useEffect(() => {
-    // 只有当 visible 变成 true 时，才启动定时器
-    if (visible) {
-      const timer = setTimeout(() => {
-        setVisible(false); // 2秒后隐藏
-      }, 2000);
-
-      // 清理函数：防止用户狂点按钮导致定时器冲突
-      return () => clearTimeout(timer);
+    if (!visible) {
+      return;
     }
-  }, [visible]); // 依赖项改为 visible
+
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 2200);
+
+    return () => clearTimeout(timer);
+  }, [visible]);
+
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        随机伤害概率分布
-      </Typography>
+    <Stack spacing={1.2}>
+      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
+        <Typography variant="h6">李傕概率判定</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+          输入三个结果概率（总和需为 100），再执行随机判定。
+        </Typography>
 
-      <Stack spacing={3}>
-        {/* 输入框 A */}
-        <TextField
-          label="0伤害-羊袭(%)"
-          type="number" // 限制数字输入键盘
-          value={values.partA}
-          onChange={(e) => handleChange("partA", e.target.value)}
-          error={currentSum > 100}
-        />
+        <Stack direction="row" spacing={0.8} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+          {presets.map((item) => (
+            <Button
+              key={item.label}
+              size="small"
+              variant="outlined"
+              color="secondary"
+              onClick={() => setValues(item.values)}
+              sx={{ minHeight: 34 }}
+            >
+              {item.label}
+            </Button>
+          ))}
+          <Button
+            size="small"
+            variant="text"
+            color="secondary"
+            onClick={() => setValues({ partA: "", partB: "", partC: "" })}
+            sx={{ minHeight: 34 }}
+          >
+            清空
+          </Button>
+        </Stack>
+      </Paper>
 
-        {/* 输入框 B */}
-        <TextField
-          label="1伤害-狗袭(%)"
-          type="number"
-          value={values.partB}
-          onChange={(e) => handleChange("partB", e.target.value)}
-          error={currentSum > 100}
-        />
+      <Paper sx={{ borderRadius: 2, p: 1.3 }}>
+        <Stack spacing={1.2}>
+          <TextField
+            label="0 伤害 - 羊袭 (%)"
+            type="number"
+            value={values.partA}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => handleChange("partA", event)}
+            error={currentSum > 100}
+            inputProps={{ min: 0, max: 100, inputMode: "decimal" }}
+          />
 
-        {/* 输入框 C */}
-        <TextField
-          label="2伤害-狼袭(%)"
-          type="number"
-          value={values.partC}
-          onChange={(e) => handleChange("partC", e.target.value)}
-          error={currentSum > 100}
-        />
+          <TextField
+            label="1 伤害 - 狗袭 (%)"
+            type="number"
+            value={values.partB}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => handleChange("partB", event)}
+            error={currentSum > 100}
+            inputProps={{ min: 0, max: 100, inputMode: "decimal" }}
+          />
 
-        {/* 4. 实时提示反馈区域 */}
-        {isValid ? (
-          // 情况 1: 等于 100 (成功)
-          <Alert severity="success">完美！总和等于 100%。</Alert>
-        ) : (
-          // 情况 2: 不等于 100 (警告/错误)
-          <Alert severity={currentSum > 100 ? "error" : "warning"}>
-            当前总和: <strong>{currentSum}%</strong>
-            {currentSum < 100 && ` (还差 ${diff}%)`}
-            {currentSum > 100 && ` (已超出 ${Math.abs(diff)}%)`}
-          </Alert>
-        )}
-        <Button
-          variant="contained"
-          disabled={!isValid}
-          onClick={() => handleGenerate()}
-        >
-          狼袭！
-        </Button>
-        <Fade in={visible} timeout={500}>
-          <Typography
-            align="center"
-            fontSize={"16vw"}
+          <TextField
+            label="2 伤害 - 狼袭 (%)"
+            type="number"
+            value={values.partC}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => handleChange("partC", event)}
+            error={currentSum > 100}
+            inputProps={{ min: 0, max: 100, inputMode: "decimal" }}
+          />
+
+          {isValid ? (
+            <Alert severity="success">总和为 100%，可以开始判定。</Alert>
+          ) : (
+            <Alert severity={currentSum > 100 ? "error" : "warning"}>
+              当前总和: <strong>{currentSum}%</strong>
+              {!isAllFilled && "（请先填完三个输入项）"}
+              {isAllFilled && currentSum < 100 && `（还差 ${diff}%）`}
+              {isAllFilled && currentSum > 100 && `（超出 ${Math.abs(diff)}%）`}
+            </Alert>
+          )}
+
+          <Stack spacing={0.6}>
+            <Typography variant="caption" color="text.secondary">
+              概率分布
+            </Typography>
+
+            <Box
+              role="img"
+              aria-label="当前三段概率分布"
+              sx={{
+                height: 14,
+                borderRadius: 999,
+                overflow: "hidden",
+                display: "flex",
+                border: "1px solid #D6DEE5",
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              {resultMeta.map((item) => (
+                <Box
+                  key={item.label}
+                  sx={{
+                    width: `${item.value}%`,
+                    minWidth: item.value > 0 ? 6 : 0,
+                    backgroundColor: item.color,
+                  }}
+                />
+              ))}
+            </Box>
+
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+              {resultMeta.map((item) => (
+                <Chip key={item.label} size="small" label={`${item.label} ${item.value}%`} />
+              ))}
+            </Stack>
+          </Stack>
+
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={!isValid}
+            onClick={handleGenerate}
             sx={{
-              // 可选：为了防止文字消失后页面布局跳动
-              // 可以给它设一个固定高度，或者保持它占位
-              // 如果不介意消失后下方内容上移，可以不写这个
-              minHeight: "20vw",
+              mt: 0.2,
             }}
           >
-            {result}
-          </Typography>
-        </Fade>
-      </Stack>
-    </Box>
+            执行随机判定
+          </Button>
+        </Stack>
+      </Paper>
+
+      <Fade in={visible} timeout={250}>
+        <Paper
+          sx={{
+            minHeight: 116,
+            p: 1.2,
+            borderRadius: 2,
+            display: "grid",
+            placeItems: "center",
+            borderColor: "rgba(15,118,110,0.3)",
+            backgroundColor: "rgba(15,118,110,0.05)",
+          }}
+        >
+          <Stack spacing={0.5} alignItems="center">
+            <Chip label="本次结果" color="primary" variant="outlined" size="small" />
+            <Typography
+              className="font-jinmeifanglishu"
+              sx={{
+                fontSize: "2.3rem",
+                lineHeight: 1.1,
+                color: "primary.dark",
+              }}
+            >
+              {result}
+            </Typography>
+          </Stack>
+        </Paper>
+      </Fade>
+    </Stack>
   );
 };
 

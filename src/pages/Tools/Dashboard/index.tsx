@@ -1,67 +1,140 @@
-import { Grid, Paper, Typography, Box, Stack } from "@mui/material";
+import {
+  Box,
+  ButtonBase,
+  Chip,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import { useNavigate } from "react-router-dom";
 
 import { SxyIcon, LjIcon } from "@/components";
-import { useNavigate } from "react-router-dom";
-// 1. 定义你的工具列表数据
-// 这样未来你要加功能，只需要在这个数组里加一行，界面自动生成，不需要改布局代码
+
 const toolsList = [
   {
-    id: 1,
+    id: "sxy",
     name: "神荀彧",
-    // 2. 直接像使用标签一样使用它
-    icon: <SxyIcon />,
+    description: "奇兵 / 正兵快速决策",
+    brief: "按场面选锦囊后，一键做战术判断。",
+    tag: "对局中高频",
+    icon: <SxyIcon sx={{ width: 64, height: 64, borderRadius: "50%" }} />,
     route: "sxy",
   },
   {
-    id: 2,
+    id: "lj",
     name: "李傕",
-    icon: <LjIcon />,
+    description: "概率加权随机判定",
+    brief: "输入三段概率后执行单次随机结果。",
+    tag: "概率工具",
+    icon: <LjIcon sx={{ width: 64, height: 64, borderRadius: "50%" }} />,
     route: "lj",
   },
-  // 未来可以在这里继续添加...
 ];
+
 const ToolsIndex = () => {
   const navigate = useNavigate();
+
   return (
-    <Box sx={{ padding: 2 }}>
-      {/* Grid container: 网格容器
-         spacing={2}: 每个格子之间的间距
-      */}
-      <Grid container spacing={2}>
-        {toolsList.map((tool) => (
-          <Grid size={4} key={tool.id}>
-            <Paper
-              elevation={2} // 阴影深度，0-24，值越大越立体
-              sx={{
-                padding: 1,
-                textAlign: "center",
-                cursor: "pointer",
-                // 点击时的反馈效果（可选）
-                "&:active": { backgroundColor: "#f5f5f5" },
-              }}
-              onClick={() => {
-                console.log(`点击了 ${tool.name}，准备跳转到 ${tool.route}`);
-                // 这里后面可以接 navigate(tool.route)
-                void navigate(tool.route);
-              }}
-            >
-              <Stack alignItems="center" spacing={0}>
+    <Stack spacing={1.2}>
+      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
+        <Typography variant="h6">工具列表</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+          选择一个工具，快速进入对应功能。
+        </Typography>
+      </Paper>
+
+      {toolsList.map((tool) => (
+        <Paper
+          key={tool.id}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            bgcolor: "rgba(255,255,255,0.98)",
+          }}
+        >
+          <ButtonBase
+            className="tap-direct"
+            onClick={() => {
+              void navigate(tool.route);
+            }}
+            sx={{
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              p: 1.4,
+              cursor: "pointer",
+              transition: "background-color 0.18s ease, box-shadow 0.18s ease",
+              "&:hover": {
+                backgroundColor: "rgba(15,118,110,0.04)",
+                boxShadow: "0 10px 22px rgba(15,23,42,0.12)",
+              },
+              "&:active": {
+                backgroundColor: "rgba(15,118,110,0.08)",
+              },
+              "&:focus-visible": {
+                outline: "2px solid #0F766E",
+                outlineOffset: "-2px",
+              },
+            }}
+          >
+            <Stack spacing={1.1}>
+              <Stack direction="row" spacing={1.2} alignItems="center">
                 <Box
                   sx={{
-                    color: "primary.main",
+                    width: 74,
+                    height: 74,
+                    borderRadius: "50%",
+                    border: "1px solid #D9E2E8",
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
+                    backgroundColor: "#FFFFFF",
                   }}
                 >
                   {tool.icon}
                 </Box>
-                <Typography variant="caption" display="block">
-                  {tool.name}
+
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography variant="h6" sx={{ fontSize: "1.22rem", lineHeight: 1.2 }}>
+                    {tool.name}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mt: 0.35 }}>
+                    {tool.description}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                    {tool.brief}
+                  </Typography>
+                </Box>
+
+                <ChevronRightRoundedIcon sx={{ color: "primary.main", fontSize: 24 }} />
+              </Stack>
+
+              <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+                <Chip
+                  size="small"
+                  label={tool.tag}
+                  sx={{
+                    color: "primary.dark",
+                    backgroundColor: "rgba(15,118,110,0.1)",
+                    border: "1px solid rgba(15,118,110,0.2)",
+                  }}
+                />
+                <Typography variant="body2" color="primary.main" fontWeight={700}>
+                  点击进入
                 </Typography>
               </Stack>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+            </Stack>
+          </ButtonBase>
+        </Paper>
+      ))}
+
+      <Paper sx={{ borderRadius: 2, p: 1.2 }}>
+        <Typography variant="body2" color="text.secondary">
+          新增工具时，只需在 `toolsList` 里追加一项即可自动渲染。
+        </Typography>
+      </Paper>
+    </Stack>
   );
 };
 

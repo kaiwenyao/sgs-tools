@@ -44,7 +44,7 @@ spec:
     }
 
     parameters {
-        string(name: 'IMAGE_NAME', defaultValue: 'kaiwenyao/sgs-react-tools', description: 'Docker image name')
+        string(name: 'IMAGE_NAME', defaultValue: 'sgs-tools', description: 'Docker image name')
         string(name: 'IMAGE_TAG', defaultValue: '', description: 'Image tag (empty means BUILD_NUMBER)')
         booleanParam(name: 'PUSH_IMAGE', defaultValue: true, description: 'Push image to registry')
         string(name: 'CONTAINER_NAME', defaultValue: 'sgs-tools', description: 'Container name on OVH server')

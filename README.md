@@ -55,11 +55,9 @@ npm run preview
 
 ### 使用 Docker
 
-项目内置生产用 Dockerfile，并已推送到 Docker Hub。
+项目内置生产用 Dockerfile，镜像名统一为 **`sgs-tools`**。
 
-- **Docker Hub 镜像**：[`kaiwenyao/sgs-tools`](https://hub.docker.com/r/kaiwenyao/sgs-tools/)
-
-本地构建与运行示例：
+本地构建与运行示例（如需推到 Docker Hub / 私有仓库，请按自己的仓库地址打 tag，只需保证镜像名为 `sgs-tools` 即可）：
 
 ```bash
 docker build -t sgs-tools .

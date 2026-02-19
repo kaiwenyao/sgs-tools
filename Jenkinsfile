@@ -170,7 +170,7 @@ docker rm -f "$CONTAINER_NAME" || true
 docker run -d \
   --name "$CONTAINER_NAME" \
   --restart unless-stopped \
-  --network flask-app \
+  --network nginxproxymanager_default \
   -e BACKEND_HOST="$BACKEND_HOST" \
   -e BACKEND_PORT="$BACKEND_PORT" \
   --env-file "$CONTAINER_ENV_FILE" \

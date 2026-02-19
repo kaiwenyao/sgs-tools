@@ -1,77 +1,69 @@
-# Docker images
-[dockerhub](https://hub.docker.com/r/kaiwenyao/sgs-tools/)
+## sgs-tools
 
-# React + TypeScript + Vite
+一个面向 **三国杀对局辅助** 的「移动端优先」小工具集，提供常用判定和战术决策辅助能力，直接在浏览器中即可使用。
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 功能概览
 
-Currently, two official plugins are available:
+- **工具首页（Dashboard）**
+  - 工具列表入口，展示每个工具的图标、名称、简介和标签（如「对局中高频」「概率工具」）。
+- **神荀彧判定（`/tools/sxy`）**
+  - 勾选当前场上的锦囊（顺手牵羊、过河拆桥、五谷丰登等）。
+  - 选择「奇兵」或「正兵」应对方案，快速做出战术判断。
+  - 为移动端优化的按钮布局和点击反馈。
+- **李傕概率判定（`/tools/lj`）**
+  - 输入三段概率（羊袭 / 狗袭 / 狼袭，总和为 100%）。
+  - 内置校验与概率分布可视化，确保输入合理。
+  - 一键执行单次随机判定，并以放大结果卡的形式展示。
+- **关于页面（`/about`）**
+  - 说明项目目标、特点以及技术栈标签。
+- **底部导航**
+  - 类 App 的底部 Tab（工具列表 / 关于），自动考虑安全区（`safe-area-inset-bottom`）。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 技术栈
 
-## React Compiler
+- **前端框架**：React + TypeScript + Vite
+- **UI 组件库**：Material UI（MUI），自定义浅色主题、统一圆角与卡片样式
+- **样式增强**：Tailwind 基础层（字体、`tap-direct`、`font-jinmeifanglishu` 等工具类）
+- **路由**：React Router（懒加载、统一加载状态）
+- **构建与部署**：
+  - Docker 镜像（Nginx 静态部署）
+  - Jenkins 流水线（见 `Jenkinsfile`）
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### 路由结构
 
-## Expanding the ESLint configuration
+- `/` → 布局组件 + 顶部卡片 + 底部导航（默认重定向到 `/tools`）
+- `/tools` → 工具列表
+- `/tools/sxy` → 神荀彧判定工具
+- `/tools/lj` → 李傕概率判定工具
+- `/about` → 关于页面
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 本地开发
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# 安装依赖
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# 本地启动（Vite 开发服务）
+npm run dev
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 生产构建
+npm run build
+
+# 预览生产构建
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 使用 Docker
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+项目内置生产用 Dockerfile，并已推送到 Docker Hub。
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Docker Hub 镜像**：[`kaiwenyao/sgs-tools`](https://hub.docker.com/r/kaiwenyao/sgs-tools/)
+
+本地构建与运行示例：
+
+```bash
+docker build -t sgs-tools .
+docker run --rm -p 8080:80 sgs-tools
 ```
-# sgs-tools
+
+浏览器访问 `http://localhost:8080` 即可看到移动端样式的工具集界面。

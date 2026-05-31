@@ -3,6 +3,7 @@ const LijueTool = {
   result: null,
   visible: false,
   hideTimer: null,
+  initialized: false,
 
   presets: [
     { label: '均衡', values: { partA: '34', partB: '33', partC: '33' } },
@@ -61,47 +62,52 @@ const LijueTool = {
             min="0" max="100" step="0.01"
             inputmode="decimal">
 
-          ${isValid 
-            ? '<div class="alert alert-success">总和为 100%，可以开始判定。</div>'
-            : `<div class="alert ${currentSum > 100 ? 'alert-error' : 'alert-warning'}">
-                当前总和: <strong>${currentSum}%</strong>
-                ${!isAllFilled ? '（请先填完三个输入项）' : ''}
-                ${isAllFilled && currentSum < 100 ? `（还差 ${diff}%）` : ''}
-                ${isAllFilled && currentSum > 100 ? `（超出 ${Math.abs(diff)}%）` : ''}
-              </div>`
-          }
+          <div id="lj-alert">
+            ${isValid 
+              ? '<div class="alert alert-success">总和为 100%，可以开始判定。</div>'
+              : `<div class="alert ${currentSum > 100 ? 'alert-error' : 'alert-warning'}">
+                  当前总和: <strong>${currentSum}%</strong>
+                  ${!isAllFilled ? '（请先填完三个输入项）' : ''}
+                  ${isAllFilled && currentSum < 100 ? `（还差 ${diff}%）` : ''}
+                  ${isAllFilled && currentSum > 100 ? `（超出 ${Math.abs(diff)}%）` : ''}
+                </div>`
+            }
+          </div>
 
           <div>
             <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px;">概率分布</p>
             <div class="prob-bar" role="img" aria-label="当前三段概率分布">
-              <div class="prob-segment" style="width: ${numA}%; min-width: ${numA > 0 ? '6px' : '0'}; background: #0F766E;"></div>
-              <div class="prob-segment" style="width: ${numB}%; min-width: ${numB > 0 ? '6px' : '0'}; background: #B45309;"></div>
-              <div class="prob-segment" style="width: ${numC}%; min-width: ${numC > 0 ? '6px' : '0'}; background: #64748B;"></div>
+              <div id="lj-bar-a" class="prob-segment" style="width: ${numA}%; min-width: ${numA > 0 ? '6px' : '0'}; background: #0F766E;"></div>
+              <div id="lj-bar-b" class="prob-segment" style="width: ${numB}%; min-width: ${numB > 0 ? '6px' : '0'}; background: #B45309;"></div>
+              <div id="lj-bar-c" class="prob-segment" style="width: ${numC}%; min-width: ${numC > 0 ? '6px' : '0'}; background: #64748B;"></div>
             </div>
             <div class="prob-labels">
-              <span class="prob-label">羊袭 ${numA}%</span>
-              <span class="prob-label">狗袭 ${numB}%</span>
-              <span class="prob-label">狼袭 ${numC}%</span>
+              <span id="lj-label-a" class="prob-label">羊袭 ${numA}%</span>
+              <span id="lj-label-b" class="prob-label">狗袭 ${numB}%</span>
+              <span id="lj-label-c" class="prob-label">狼袭 ${numC}%</span>
             </div>
           </div>
 
-          <button class="btn btn-primary btn-full lj-generate" ${!isValid ? 'disabled' : ''}>
+          <button id="lj-generate-btn" class="btn btn-primary btn-full lj-generate" ${!isValid ? 'disabled' : ''}>
             执行随机判定
           </button>
         </div>
       </div>
 
-      ${this.visible && this.result ? `
-        <div class="card result-card">
-          <div class="result-content">
-            <span class="result-label">本次结果</span>
-            <div class="result-value">${this.result}</div>
+      <div id="lj-result-container">
+        ${this.visible && this.result ? `
+          <div class="card result-card">
+            <div class="result-content">
+              <span class="result-label">本次结果</span>
+              <div class="result-value">${this.result}</div>
+            </div>
           </div>
-        </div>
-      ` : ''}
+        ` : ''}
+      </div>
     `;
 
     this.bindEvents();
+    this.initialized = true;
   },
 
   bindEvents() {
@@ -109,7 +115,7 @@ const LijueTool = {
       btn.addEventListener('click', () => {
         const preset = JSON.parse(btn.dataset.preset);
         this.values = { ...preset };
-        this.refresh();
+        this.updateUI();
       });
     });
 
@@ -117,7 +123,7 @@ const LijueTool = {
       this.values = { partA: '', partB: '', partC: '' };
       this.result = null;
       this.visible = false;
-      this.refresh();
+      this.updateUI();
     });
 
     document.querySelectorAll('.text-field').forEach(input => {
@@ -127,14 +133,64 @@ const LijueTool = {
         
         if (value === '' || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
           this.values[key] = value;
-          this.refresh();
+          this.updateDynamicParts();
         }
       });
     });
 
-    document.querySelector('.lj-generate')?.addEventListener('click', () => {
+    document.getElementById('lj-generate-btn')?.addEventListener('click', () => {
       this.generate();
     });
+  },
+
+  updateDynamicParts() {
+    const numA = this.parseWeight(this.values.partA);
+    const numB = this.parseWeight(this.values.partB);
+    const numC = this.parseWeight(this.values.partC);
+    const currentSum = numA + numB + numC;
+    const isAllFilled = this.values.partA !== '' && this.values.partB !== '' && this.values.partC !== '';
+    const isValid = isAllFilled && currentSum === 100;
+    const diff = 100 - currentSum;
+
+    const alertEl = document.getElementById('lj-alert');
+    if (alertEl) {
+      alertEl.innerHTML = isValid 
+        ? '<div class="alert alert-success">总和为 100%，可以开始判定。</div>'
+        : `<div class="alert ${currentSum > 100 ? 'alert-error' : 'alert-warning'}">
+            当前总和: <strong>${currentSum}%</strong>
+            ${!isAllFilled ? '（请先填完三个输入项）' : ''}
+            ${isAllFilled && currentSum < 100 ? `（还差 ${diff}%）` : ''}
+            ${isAllFilled && currentSum > 100 ? `（超出 ${Math.abs(diff)}%）` : ''}
+          </div>`;
+    }
+
+    const barA = document.getElementById('lj-bar-a');
+    const barB = document.getElementById('lj-bar-b');
+    const barC = document.getElementById('lj-bar-c');
+    if (barA) barA.style.width = `${numA}%`;
+    if (barB) barB.style.width = `${numB}%`;
+    if (barC) barC.style.width = `${numC}%`;
+
+    const labelA = document.getElementById('lj-label-a');
+    const labelB = document.getElementById('lj-label-b');
+    const labelC = document.getElementById('lj-label-c');
+    if (labelA) labelA.textContent = `羊袭 ${numA}%`;
+    if (labelB) labelB.textContent = `狗袭 ${numB}%`;
+    if (labelC) labelC.textContent = `狼袭 ${numC}%`;
+
+    const generateBtn = document.getElementById('lj-generate-btn');
+    if (generateBtn) {
+      generateBtn.disabled = !isValid;
+    }
+
+    document.querySelectorAll('.text-field').forEach(input => {
+      input.classList.toggle('error', currentSum > 100);
+    });
+  },
+
+  updateUI() {
+    const content = document.getElementById('content');
+    this.render(content);
   },
 
   parseWeight(value) {
@@ -161,13 +217,27 @@ const LijueTool = {
 
     this.result = this.resultLabels[finalResult];
     this.visible = true;
-    this.refresh();
+    this.updateResult();
 
     if (this.hideTimer) clearTimeout(this.hideTimer);
     this.hideTimer = setTimeout(() => {
       this.visible = false;
-      this.refresh();
+      this.updateResult();
     }, 2200);
+  },
+
+  updateResult() {
+    const container = document.getElementById('lj-result-container');
+    if (container) {
+      container.innerHTML = this.visible && this.result ? `
+        <div class="card result-card">
+          <div class="result-content">
+            <span class="result-label">本次结果</span>
+            <div class="result-value">${this.result}</div>
+          </div>
+        </div>
+      ` : '';
+    }
   },
 
   refresh() {

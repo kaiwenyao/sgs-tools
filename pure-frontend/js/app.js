@@ -114,9 +114,9 @@ const App = {
           </div>
         </div>
         <div class="chip-list">
-          <span class="chip" style="color: var(--primary); border-color: var(--primary);">React + MUI</span>
+          <span class="chip" style="color: var(--primary); border-color: var(--primary);">纯前端实现</span>
           <span class="chip" style="color: var(--primary); border-color: var(--primary);">移动端优先</span>
-          <span class="chip">持续维护中</span>
+          <span class="chip">零依赖</span>
         </div>
       </div>
 

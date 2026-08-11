@@ -12,6 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 
+import { SectionCard } from "@/components";
+import { brandAlpha } from "@/theme";
+
 const getRandomPercent = () => Math.random() * 100;
 const resultLabels = ["羊袭", "狗袭", "狼袭"] as const;
 
@@ -53,9 +56,9 @@ const Lijue = () => {
 
   const resultMeta = useMemo(
     () => [
-      { label: "羊袭", value: numA, color: "#0F766E" },
-      { label: "狗袭", value: numB, color: "#B45309" },
-      { label: "狼袭", value: numC, color: "#64748B" },
+      { label: "羊袭", value: numA, color: "primary.main" },
+      { label: "狗袭", value: numB, color: "secondary.main" },
+      { label: "狼袭", value: numC, color: "neutral.main" },
     ],
     [numA, numB, numC]
   );
@@ -104,14 +107,12 @@ const Lijue = () => {
   }, [visible]);
 
   return (
-    <Stack spacing={1.2}>
-      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
-        <Typography variant="h6">李傕概率判定</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
-          输入三个结果概率（总和需为 100），再执行随机判定。
-        </Typography>
-
-        <Stack direction="row" spacing={0.8} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+    <>
+      <SectionCard
+        title="李傕概率判定"
+        subtitle="输入三个结果概率（总和需为 100），再执行随机判定。"
+      >
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {presets.map((item) => (
             <Button
               key={item.label}
@@ -134,10 +135,10 @@ const Lijue = () => {
             清空
           </Button>
         </Stack>
-      </Paper>
+      </SectionCard>
 
-      <Paper sx={{ borderRadius: 2, p: 1.3 }}>
-        <Stack spacing={1.2}>
+      <Paper sx={{ p: 1.5 }}>
+        <Stack spacing={1}>
           <TextField
             label="0 伤害 - 羊袭 (%)"
             type="number"
@@ -176,7 +177,7 @@ const Lijue = () => {
             </Alert>
           )}
 
-          <Stack spacing={0.6}>
+          <Stack spacing={0.5}>
             <Typography variant="caption" color="text.secondary">
               概率分布
             </Typography>
@@ -189,7 +190,8 @@ const Lijue = () => {
                 borderRadius: 999,
                 overflow: "hidden",
                 display: "flex",
-                border: "1px solid #D6DEE5",
+                border: "1px solid",
+                borderColor: "divider",
                 backgroundColor: "#FFFFFF",
               }}
             >
@@ -218,7 +220,7 @@ const Lijue = () => {
             disabled={!isValid}
             onClick={handleGenerate}
             sx={{
-              mt: 0.2,
+              mt: 0.25,
             }}
           >
             执行随机判定
@@ -230,30 +232,26 @@ const Lijue = () => {
         <Paper
           sx={{
             minHeight: 116,
-            p: 1.2,
-            borderRadius: 2,
+            p: 1.5,
             display: "grid",
             placeItems: "center",
-            borderColor: "rgba(15,118,110,0.3)",
-            backgroundColor: "rgba(15,118,110,0.05)",
+            borderColor: brandAlpha(0.3),
+            backgroundColor: brandAlpha(0.05),
           }}
         >
           <Stack spacing={0.5} alignItems="center">
             <Chip label="本次结果" color="primary" variant="outlined" size="small" />
             <Typography
               className="font-jinmeifanglishu"
-              sx={{
-                fontSize: "2.3rem",
-                lineHeight: 1.1,
-                color: "primary.dark",
-              }}
+              variant="display"
+              sx={{ color: "primary.dark" }}
             >
               {result}
             </Typography>
           </Stack>
         </Paper>
       </Fade>
-    </Stack>
+    </>
   );
 };
 

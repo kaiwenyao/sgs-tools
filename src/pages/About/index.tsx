@@ -2,13 +2,9 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import SpeedOutlinedIcon from "@mui/icons-material/SpeedOutlined";
-import {
-  Box,
-  Chip,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
+
+import { IconBadge, SectionCard } from "@/components";
 
 const featureList = [
   {
@@ -30,53 +26,33 @@ const featureList = [
 
 const About = () => {
   return (
-    <Stack spacing={1.2}>
-      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
-        <Stack direction="row" spacing={1} alignItems="flex-start">
-          <InfoOutlinedIcon color="primary" sx={{ mt: 0.1 }} />
-          <Box>
-            <Typography variant="h6">关于本工具</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.45, lineHeight: 1.7 }}>
-              这是一个面向三国杀对局辅助的轻量工具集，目标是让常用判定更快、更直观。
-              当前包含神荀彧与李傕相关工具，后续会继续新增。
-            </Typography>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={0.8} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+    <>
+      <SectionCard
+        icon={<InfoOutlinedIcon color="primary" />}
+        title="关于本工具"
+        subtitle="这是一个面向三国杀对局辅助的轻量工具集，目标是让常用判定更快、更直观。当前包含神荀彧与李傕相关工具，后续会继续新增。"
+      >
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           <Chip label="React + MUI" size="small" color="primary" variant="outlined" />
           <Chip label="移动端优先" size="small" color="primary" variant="outlined" />
           <Chip label="持续维护中" size="small" />
         </Stack>
-      </Paper>
+      </SectionCard>
 
       {featureList.map((feature) => (
-        <Paper key={feature.title} sx={{ borderRadius: 2, p: 1.3 }}>
-          <Stack direction="row" spacing={1.1} alignItems="flex-start">
-            <Box
-              sx={{
-                width: 32,
-                height: 32,
-                borderRadius: 1.8,
-                color: "primary.main",
-                backgroundColor: "rgba(15,118,110,0.1)",
-                display: "grid",
-                placeItems: "center",
-                flexShrink: 0,
-              }}
-            >
-              {feature.icon}
-            </Box>
+        <Paper key={feature.title} sx={{ p: 1.5 }}>
+          <Stack direction="row" spacing={1} alignItems="flex-start">
+            <IconBadge size={32}>{feature.icon}</IconBadge>
             <Box>
               <Typography fontWeight={700}>{feature.title}</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 {feature.description}
               </Typography>
             </Box>
           </Stack>
         </Paper>
       ))}
-    </Stack>
+    </>
   );
 };
 

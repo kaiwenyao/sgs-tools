@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Chip,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Chip, Grid, Stack, Typography } from "@mui/material";
+
+import { SectionCard } from "@/components";
+import { brandAlpha, inkShadow, typeScale } from "@/theme";
+
+const buttonTransition =
+  "background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease";
+const activeShadow = inkShadow(0.12, 6, 14);
 
 const scrollList = [
   { id: 1, name: "顺手牵羊" },
@@ -58,15 +57,11 @@ const Sxy = () => {
   }, [selectedOption]);
 
   return (
-    <Stack spacing={1.2}>
-      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
-          <Box>
-            <Typography variant="h6">神荀彧判定</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.35 }}>
-              先勾选场上锦囊，再选择奇兵或正兵。
-            </Typography>
-          </Box>
+    <>
+      <SectionCard
+        title="神荀彧判定"
+        subtitle="先勾选场上锦囊，再选择奇兵或正兵。"
+        action={
           <Button
             size="small"
             color="secondary"
@@ -79,20 +74,24 @@ const Sxy = () => {
           >
             清空
           </Button>
-        </Stack>
-
-        <Stack direction="row" spacing={0.8} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
-          <Chip label={`已选锦囊 ${selectedScrolls.length}`} size="small" color="primary" variant="outlined" />
+        }
+      >
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          <Chip
+            label={`已选锦囊 ${selectedScrolls.length}`}
+            size="small"
+            color="primary"
+            variant="outlined"
+          />
           <Chip label={`当前应对：${selectedOptionLabel}`} size="small" />
         </Stack>
-      </Paper>
+      </SectionCard>
 
-      <Paper sx={{ borderRadius: 2, p: 1.3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-          <Typography variant="subtitle1">锦囊列表</Typography>
-          <Chip label={`${scrollList.length} 项`} size="small" />
-        </Stack>
-
+      <SectionCard
+        title="锦囊列表"
+        titleVariant="subtitle1"
+        action={<Chip label={`${scrollList.length} 项`} size="small" />}
+      >
         <Grid container spacing={1}>
           {scrollList.map((item) => {
             const isActive = selectedScrolls.includes(item.id);
@@ -105,16 +104,13 @@ const Sxy = () => {
                   aria-pressed={isActive}
                   onClick={() => handleToggle(item.id)}
                   sx={{
-                    minHeight: 44,
-                    borderRadius: 2,
-                    fontSize: "0.98rem",
+                    fontSize: typeScale.body,
                     color: isActive ? "primary.dark" : "text.primary",
                     border: "1px solid",
-                    borderColor: isActive ? "primary.main" : "#D6DEE5",
-                    backgroundColor: isActive ? "rgba(15,118,110,0.12)" : "#FFFFFF",
-                    transition:
-                      "background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease",
-                    boxShadow: isActive ? "0 4px 10px rgba(15,23,42,0.12)" : "none",
+                    borderColor: isActive ? "primary.main" : "divider",
+                    backgroundColor: isActive ? brandAlpha(0.12) : "#FFFFFF",
+                    transition: buttonTransition,
+                    boxShadow: isActive ? activeShadow : "none",
                   }}
                 >
                   {item.name}
@@ -123,13 +119,9 @@ const Sxy = () => {
             );
           })}
         </Grid>
-      </Paper>
+      </SectionCard>
 
-      <Paper sx={{ borderRadius: 2, p: 1.3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          应对方式
-        </Typography>
-
+      <SectionCard title="应对方式" titleVariant="subtitle1">
         <Grid container spacing={1}>
           {optionList.map((item) => {
             const isActive = item.id === selectedOption;
@@ -144,16 +136,14 @@ const Sxy = () => {
                   variant={isActive ? "contained" : "outlined"}
                   sx={{
                     minHeight: 96,
-                    borderRadius: 2.5,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 0.2,
-                    transition:
-                      "background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease",
-                    boxShadow: isActive ? "0 6px 14px rgba(15,23,42,0.16)" : "none",
+                    gap: 0.25,
+                    transition: buttonTransition,
+                    boxShadow: isActive ? activeShadow : "none",
                   }}
                 >
-                  <Typography className="font-jinmeifanglishu" sx={{ fontSize: "1.7rem", lineHeight: 1 }}>
+                  <Typography className="font-jinmeifanglishu" variant="large">
                     {item.name}
                   </Typography>
                   <Typography component="span" variant="caption" sx={{ opacity: 0.9 }}>
@@ -164,14 +154,14 @@ const Sxy = () => {
             );
           })}
         </Grid>
-      </Paper>
+      </SectionCard>
 
-      <Paper sx={{ borderRadius: 2, p: 1.2 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.65 }}>
+      <SectionCard>
+        <Typography variant="body2" color="text.secondary">
           已选锦囊：{selectedScrollText}
         </Typography>
-      </Paper>
-    </Stack>
+      </SectionCard>
+    </>
   );
 };
 

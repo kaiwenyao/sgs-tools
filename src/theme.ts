@@ -1,7 +1,43 @@
 import { alpha, createTheme } from "@mui/material/styles";
+import type { CSSProperties } from "react";
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    neutral: Palette["primary"];
+  }
+  interface PaletteOptions {
+    neutral?: PaletteOptions["primary"];
+  }
+  interface TypographyVariants {
+    display: CSSProperties;
+    large: CSSProperties;
+  }
+  interface TypographyVariantsOptions {
+    display?: CSSProperties;
+    large?: CSSProperties;
+  }
+}
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    display: true;
+    large: true;
+  }
+}
 
 const bodyFont =
   "'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif";
+
+export const typeScale = {
+  display: "2.25rem",
+  large: "1.7rem",
+  body: "0.98rem",
+  micro: "0.78rem",
+} as const;
+
+export const brandAlpha = (opacity: number) => alpha("#0F766E", opacity);
+
+export const inkShadow = (opacity: number, y = 6, blur = 16) =>
+  `0 ${y}px ${blur}px rgba(15, 23, 42, ${opacity})`;
 
 export const appTheme = createTheme({
   palette: {
@@ -27,6 +63,9 @@ export const appTheme = createTheme({
       secondary: "#475569",
     },
     divider: "#D9E2E8",
+    neutral: {
+      main: "#64748B",
+    },
   },
   shape: {
     borderRadius: 12,
@@ -60,6 +99,16 @@ export const appTheme = createTheme({
       textTransform: "none",
       letterSpacing: "0.01em",
     },
+    display: {
+      fontSize: typeScale.display,
+      lineHeight: 1.1,
+      fontWeight: 700,
+    },
+    large: {
+      fontSize: typeScale.large,
+      lineHeight: 1.1,
+      fontWeight: 700,
+    },
   },
   components: {
     MuiCssBaseline: {
@@ -90,10 +139,11 @@ export const appTheme = createTheme({
     },
     MuiPaper: {
       styleOverrides: {
-        root: {
-          border: "1px solid #D9E2E8",
-          boxShadow: "0 6px 16px rgba(15, 23, 42, 0.05)",
-        },
+        root: ({ theme }) => ({
+          border: "1px solid",
+          borderColor: theme.palette.divider,
+          boxShadow: inkShadow(0.05, 6, 16),
+        }),
       },
     },
     MuiButton: {
@@ -124,12 +174,13 @@ export const appTheme = createTheme({
     },
     MuiBottomNavigation: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           borderRadius: 16,
-          border: "1px solid #D9E2E8",
+          border: "1px solid",
+          borderColor: theme.palette.divider,
           backgroundColor: alpha("#FFFFFF", 0.96),
-          boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
-        },
+          boxShadow: inkShadow(0.12, 8, 20),
+        }),
       },
     },
     MuiBottomNavigationAction: {
@@ -146,29 +197,29 @@ export const appTheme = createTheme({
         label: {
           fontWeight: 600,
           "&.Mui-selected": {
-            fontSize: "0.78rem",
+            fontSize: typeScale.micro,
           },
         },
       },
     },
     MuiTextField: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           "& .MuiOutlinedInput-root": {
             borderRadius: 10,
             backgroundColor: "#FFFFFF",
             "& fieldset": {
-              borderColor: "#D6DEE5",
+              borderColor: theme.palette.divider,
             },
             "&:hover fieldset": {
               borderColor: "#9AA9B5",
             },
             "&.Mui-focused fieldset": {
-              borderColor: "#0F766E",
+              borderColor: theme.palette.primary.main,
               borderWidth: 2,
             },
           },
-        },
+        }),
       },
     },
   },

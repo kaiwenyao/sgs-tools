@@ -23,13 +23,12 @@ const Loading = () => (
   >
         <Paper
       sx={{
-        borderRadius: 2,
         px: 2,
-        py: 1.8,
+        py: 1.5,
         minWidth: 210,
       }}
     >
-      <Stack spacing={1.1} alignItems="center">
+      <Stack spacing={1} alignItems="center">
         <CircularProgress size={32} />
         <Typography fontWeight={700} color="text.primary">
           页面加载中

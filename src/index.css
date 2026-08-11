@@ -17,10 +17,6 @@
     --brand-main: #0f766e;
   }
 
-  body {
-    @apply font-sans text-slate-900;
-  }
-
   *:focus-visible {
     outline: 2px solid var(--brand-main);
     outline-offset: 2px;

@@ -9,7 +9,10 @@ import {
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import { useNavigate } from "react-router-dom";
 
-import { SxyIcon, LjIcon } from "@/components";
+import { IconBadge, LjIcon, SectionCard, SxyIcon } from "@/components";
+import { brandAlpha, inkShadow } from "@/theme";
+
+const tapTransition = "background-color 0.18s ease, box-shadow 0.18s ease";
 
 const toolsList = [
   {
@@ -36,19 +39,13 @@ const ToolsIndex = () => {
   const navigate = useNavigate();
 
   return (
-    <Stack spacing={1.2}>
-      <Paper sx={{ borderRadius: 2, p: 1.4 }}>
-        <Typography variant="h6">工具列表</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
-          选择一个工具，快速进入对应功能。
-        </Typography>
-      </Paper>
+    <>
+      <SectionCard title="工具列表" subtitle="选择一个工具，快速进入对应功能。" />
 
       {toolsList.map((tool) => (
         <Paper
           key={tool.id}
           sx={{
-            borderRadius: 2,
             overflow: "hidden",
             bgcolor: "rgba(255,255,255,0.98)",
           }}
@@ -62,47 +59,43 @@ const ToolsIndex = () => {
               display: "block",
               width: "100%",
               textAlign: "left",
-              p: 1.4,
+              p: 1.5,
               cursor: "pointer",
-              transition: "background-color 0.18s ease, box-shadow 0.18s ease",
+              transition: tapTransition,
               "&:hover": {
-                backgroundColor: "rgba(15,118,110,0.04)",
-                boxShadow: "0 10px 22px rgba(15,23,42,0.12)",
+                backgroundColor: brandAlpha(0.04),
+                boxShadow: inkShadow(0.12, 10, 22),
               },
               "&:active": {
-                backgroundColor: "rgba(15,118,110,0.08)",
+                backgroundColor: brandAlpha(0.08),
               },
               "&:focus-visible": {
-                outline: "2px solid #0F766E",
+                outline: "2px solid",
+                outlineColor: "primary.main",
                 outlineOffset: "-2px",
               },
             }}
           >
-            <Stack spacing={1.1}>
-              <Stack direction="row" spacing={1.2} alignItems="center">
-                <Box
+            <Stack spacing={1}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <IconBadge
+                  size={74}
+                  radius="50%"
                   sx={{
-                    width: 74,
-                    height: 74,
-                    borderRadius: "50%",
-                    border: "1px solid #D9E2E8",
-                    display: "grid",
-                    placeItems: "center",
-                    flexShrink: 0,
+                    border: "1px solid",
+                    borderColor: "divider",
                     backgroundColor: "#FFFFFF",
                   }}
                 >
                   {tool.icon}
-                </Box>
+                </IconBadge>
 
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontSize: "1.22rem", lineHeight: 1.2 }}>
-                    {tool.name}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 0.35 }}>
+                  <Typography variant="h5">{tool.name}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
                     {tool.description}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
                     {tool.brief}
                   </Typography>
                 </Box>
@@ -116,8 +109,9 @@ const ToolsIndex = () => {
                   label={tool.tag}
                   sx={{
                     color: "primary.dark",
-                    backgroundColor: "rgba(15,118,110,0.1)",
-                    border: "1px solid rgba(15,118,110,0.2)",
+                    backgroundColor: brandAlpha(0.1),
+                    border: "1px solid",
+                    borderColor: brandAlpha(0.2),
                   }}
                 />
                 <Typography variant="body2" color="primary.main" fontWeight={700}>
@@ -129,12 +123,12 @@ const ToolsIndex = () => {
         </Paper>
       ))}
 
-      <Paper sx={{ borderRadius: 2, p: 1.2 }}>
+      <SectionCard>
         <Typography variant="body2" color="text.secondary">
           新增工具时，只需在 `toolsList` 里追加一项即可自动渲染。
         </Typography>
-      </Paper>
-    </Stack>
+      </SectionCard>
+    </>
   );
 };
 

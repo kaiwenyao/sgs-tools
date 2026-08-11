@@ -1,24 +1,8 @@
-import { Box } from "@mui/material";
 import type { BoxProps } from "@mui/material";
 
+import RoundIcon from "./RoundIcon";
 import ljImage from "@/assets/icons/lijue.jpg";
 
-const LjIcon = (props: BoxProps) => {
-  return (
-    <Box
-      component="img"
-      src={ljImage}
-      alt="李傕"
-      sx={{
-        width: 60,
-        height: 60,
-        borderRadius: "50%",
-        objectFit: "cover",
-        ...props.sx,
-      }}
-      {...props}
-    />
-  );
-};
+const LjIcon = (props: BoxProps) => <RoundIcon src={ljImage} alt="李傕" {...props} />;
 
 export default LjIcon;

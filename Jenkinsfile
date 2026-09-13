@@ -48,7 +48,6 @@ spec:
     }
 
     parameters {
-        string(name: 'IMAGE_NAME', defaultValue: 'kaiwenyao/sgs-tools', description: 'Docker image name (must include Docker Hub namespace)')
         string(name: 'IMAGE_TAG', defaultValue: '', description: 'Image tag (empty means BUILD_NUMBER)')
         booleanParam(name: 'PUSH_IMAGE', defaultValue: true, description: 'Push image to registry')
         string(name: 'CONTAINER_NAME', defaultValue: 'sgs-tools', description: 'Container name on OVH server')
@@ -59,6 +58,9 @@ spec:
     }
 
     environment {
+        // 镜像名必须带 Docker Hub 命名空间，否则会解析到官方 library/ 命名空间被拒推。
+        // 不做成 parameter：Jenkins 会沿用上次构建的参数值，改默认值要等一次构建才生效。
+        IMAGE_NAME = 'kaiwenyao/sgs-tools'
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
         SERVER_HOST_CREDENTIALS_ID = 'ovh-host'
         ENV_FILE_CREDENTIALS_ID = 'react-prod.env'
@@ -93,7 +95,7 @@ spec:
                 container('docker') {
                     script {
                         def finalTag = params.IMAGE_TAG?.trim() ? params.IMAGE_TAG.trim() : env.BUILD_NUMBER
-                        env.FULL_IMAGE = "${params.IMAGE_NAME}:${finalTag}"
+                        env.FULL_IMAGE = "${env.IMAGE_NAME}:${finalTag}"
                     }
 
                     withCredentials([
